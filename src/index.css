@@ -1,0 +1,86 @@
+/* PayLogic: Global CSS Entry Point */
+
+@import './styles/bootstrap-override.css';
+@import './styles/font.css';
+@import './styles/theme.css';
+
+/* Custom Global Utilities */
+:root {
+    --text-white: #F8FAFC;
+    --text-slate: #94A3B8;
+    --primary-emerald: #10B981;
+    --primary-glow: rgba(16, 185, 129, 0.15);
+    --bg-midnight: #0F172A;
+    --bg-slate: #1E293B;
+}
+
+.text-emerald { color: var(--primary-emerald) !important; }
+.text-slate { color: var(--text-slate) !important; }
+.text-white { color: var(--text-white) !important; }
+
+.bg-midnight { background-color: var(--bg-midnight) !important; }
+.bg-slate { background-color: var(--bg-slate) !important; }
+
+.btn-emerald {
+  background: var(--primary-emerald) !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.3);
+}
+
+.btn-emerald:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 15px 25px -5px rgba(16, 185, 129, 0.4);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.border-emerald { border-color: var(--primary-emerald) !important; }
+
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+.fit-content {
+    width: fit-content;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.smaller {
+    font-size: 0.75rem;
+}
+
+/* Animations */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-up {
+    animation: slideUp 0.5s ease forwards;
+}
+
+/* Alert UI Enhancements */
+.shadow-emerald { box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.4) !important; }
+.shadow-danger { box-shadow: 0 12px 30px -10px rgba(239, 68, 68, 0.4) !important; }
+.shadow-warning { box-shadow: 0 12px 30px -10px rgba(245, 158, 11, 0.4) !important; }
+.shadow-info { box-shadow: 0 12px 30px -10px rgba(59, 130, 246, 0.4) !important; }
