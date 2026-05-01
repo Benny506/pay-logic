@@ -84,3 +84,85 @@
 .shadow-danger { box-shadow: 0 12px 30px -10px rgba(239, 68, 68, 0.4) !important; }
 .shadow-warning { box-shadow: 0 12px 30px -10px rgba(245, 158, 11, 0.4) !important; }
 .shadow-info { box-shadow: 0 12px 30px -10px rgba(59, 130, 246, 0.4) !important; }
+
+/* Print Media Queries */
+@media print {
+    @page {
+        margin: 5mm; /* Minimum margin for printers */
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Hide everything by default */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Only show the printable area */
+    .printable-area, 
+    .printable-area * {
+        visibility: visible !important;
+    }
+
+    /* Position the printable area at the absolute top/left */
+    .printable-area {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: white !important;
+        color: #000 !important;
+        margin: 0 !important;
+        padding: 0 !important; /* Remove internal padding */
+    }
+
+    /* Force background colors to print */
+    .printable-area {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    /* Specific overrides for modal content in print */
+    .modal-content.printable-area {
+        border: none !important;
+        box-shadow: none !important;
+        width: 100% !important;
+    }
+
+    .modal-header, .modal-body {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        background: white !important;
+        color: black !important;
+    }
+
+    /* Hide control buttons */
+    .no-print, .no-print * {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Ensure tables expand and don't scroll */
+    .table-responsive {
+        overflow: visible !important;
+        max-height: none !important;
+        width: 100% !important;
+    }
+
+    .table {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Adjust text colors for high-contrast print */
+    .text-emerald { color: #059669 !important; }
+    .text-slate { color: #475569 !important; }
+    .text-black { color: #000 !important; }
+    .bg-midnight, .bg-white.bg-opacity-5 {
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+}

@@ -296,7 +296,7 @@ const Payroll = () => {
                 onHide={() => setShowReportModal(false)}
                 size="xl"
                 centered
-                contentClassName="glass-card border-white border-opacity-10 shadow-2xl overflow-hidden"
+                contentClassName="glass-card border-white border-opacity-10 shadow-2xl overflow-hidden printable-area"
             >
                 <Modal.Header closeButton closeVariant="black" className="border-bottom border-white border-opacity-10 p-4">
                     <div className="d-flex align-items-center gap-3">
@@ -317,7 +317,7 @@ const Payroll = () => {
                             <p className="smaller text-slate fw-bold text-uppercase mb-1">Batch Total Payout</p>
                             <h3 className="fw-extrabold text-emerald mb-0">${parseFloat(selectedRun?.total_payout || 0).toLocaleString()}</h3>
                         </div>
-                        <Button className="btn-emerald d-flex align-items-center gap-2 px-4 rounded-pill" onClick={() => window.print()}>
+                        <Button className="btn-emerald d-flex align-items-center gap-2 px-4 rounded-pill no-print" onClick={() => window.print()}>
                             <HiOutlinePrinter size={20} />
                             Print Summary
                         </Button>
@@ -351,7 +351,7 @@ const Payroll = () => {
                     </div>
                 </Modal.Body>
                 <Modal.Footer className="border-top border-white border-opacity-10 p-4">
-                    <Button variant="outline-dark" className="rounded-pill px-4" onClick={() => setShowReportModal(false)}>
+                    <Button variant="outline-dark" className="rounded-pill px-4 no-print" onClick={() => setShowReportModal(false)}>
                         Close Audit
                     </Button>
                 </Modal.Footer>

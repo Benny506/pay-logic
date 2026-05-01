@@ -6,14 +6,19 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setEmployees, addEmployee, updateEmployeeInList, deleteEmployeeFromList } from '../redux/employeeSlice'
 import { fetchEmployees, addEmployee as addEmployeeService, updateEmployee as updateEmployeeService, deleteEmployee as deleteEmployeeService } from '../services/employeeService'
 import EmployeeModal from '../components/Admin/EmployeeModal'
+import StaffPayrollModal from '../components/Admin/StaffPayrollModal'
 import { setGlobalLoading, addAlert } from '../redux/uiSlice'
+import { fetchEmployeePayrollHistory } from '../services/payrollService'
+import { HiOutlineDocumentReport } from 'react-icons/hi'
 
 const StaffDirectory = () => {
     const dispatch = useDispatch()
     const location = useLocation()
     const employees = useSelector((state) => state.employees.list)
     const [showModal, setShowModal] = useState(false)
+    const [showHistoryModal, setShowHistoryModal] = useState(false)
     const [selectedEmployee, setSelectedEmployee] = useState(null)
+    const [employeeHistory, setEmployeeHistory] = useState([])
     const [modalLoading, setModalLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
 
@@ -75,6 +80,21 @@ const StaffDirectory = () => {
             } finally {
                 dispatch(setGlobalLoading(false))
             }
+        }
+    }
+
+    const handleViewHistory = async (employee) => {
+        try {
+            dispatch(setGlobalLoading({ loading: true, title: 'Retrieving Ledger', message: `Fetching payroll history for ${employee.full_name}...` }))
+            const data = await fetchEmployeePayrollHistory(employee.id)
+            setEmployeeHistory(data)
+            setSelectedEmployee(employee)
+            setShowHistoryModal(true)
+        } catch (error) {
+            console.error("History fetch failed:", error)
+            dispatch(addAlert({ type: 'error', message: 'Failed to retrieve employee payroll history.' }))
+        } finally {
+            dispatch(setGlobalLoading(false))
         }
     }
 
@@ -168,6 +188,14 @@ const StaffDirectory = () => {
                                             <Button
                                                 variant="link"
                                                 className="p-2 text-slate hover-primary"
+                                                onClick={() => handleViewHistory(e)}
+                                            >
+                                                <HiOutlineDocumentReport size={20} />
+                                            </Button>
+
+                                            <Button
+                                                variant="link"
+                                                className="p-2 text-slate hover-primary"
                                                 onClick={() => {
                                                     setSelectedEmployee(e);
                                                     setShowModal(true);
@@ -198,6 +226,13 @@ const StaffDirectory = () => {
                 employee={selectedEmployee}
                 onSave={handleSave}
                 loading={modalLoading}
+            />
+
+            <StaffPayrollModal
+                show={showHistoryModal}
+                onHide={() => setShowHistoryModal(false)}
+                employee={selectedEmployee}
+                history={employeeHistory}
             />
 
             <style>

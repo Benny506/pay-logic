@@ -91,3 +91,18 @@ export const createPayrollRun = async (month, year, employees) => {
 
     return runData[0]
 }
+
+/**
+ * Fetch all payroll transactions for a specific employee
+ */
+export const fetchEmployeePayrollHistory = async (employeeId) => {
+    const { data, error } = await supabase
+        .from('pay_transactions')
+        .select('*')
+        .eq('employee_id', employeeId)
+        .order('year', { ascending: false })
+        .order('month', { ascending: false })
+
+    if (error) throw error
+    return data
+}
