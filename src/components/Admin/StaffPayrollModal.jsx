@@ -30,7 +30,7 @@ const StaffPayrollModal = ({ show, onHide, employee, history }) => {
                     <div className="p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-5">
                         <p className="smaller text-slate fw-bold text-uppercase mb-1">Total Career Payout</p>
                         <h3 className="fw-extrabold text-emerald mb-0">
-                            ${history.reduce((sum, h) => sum + parseFloat(h.net_pay), 0).toLocaleString()}
+                            ₦{history.reduce((sum, h) => sum + parseFloat(h.net_pay), 0).toLocaleString()}
                         </h3>
                     </div>
                     <Button className="btn-emerald d-flex align-items-center gap-2 px-4 rounded-pill" onClick={() => window.print()}>
@@ -44,11 +44,11 @@ const StaffPayrollModal = ({ show, onHide, employee, history }) => {
                         <thead className="sticky-top bg-midnight">
                             <tr className="border-white border-opacity-10">
                                 <th className="py-3 px-3 text-slate smaller text-uppercase fw-bold">Period</th>
-                                <th className="py-3 text-slate smaller text-uppercase fw-bold text-end">Gross ($)</th>
+                                <th className="py-3 text-slate smaller text-uppercase fw-bold text-end">Gross (₦)</th>
                                 <th className="py-3 text-danger smaller text-uppercase fw-bold text-end">Tax (-10%)</th>
                                 <th className="py-3 text-danger smaller text-uppercase fw-bold text-end">Ins. (-5%)</th>
                                 <th className="py-3 text-danger smaller text-uppercase fw-bold text-end">Pens. (-5%)</th>
-                                <th className="py-3 text-emerald smaller text-uppercase fw-bold text-end pe-4">Net Payout ($)</th>
+                                <th className="py-3 text-emerald smaller text-uppercase fw-bold text-end pe-4">Net Payout (₦)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,7 +61,7 @@ const StaffPayrollModal = ({ show, onHide, employee, history }) => {
                                     <td className="py-3 smaller text-danger text-end">-{parseFloat(trans.tax_deduction).toLocaleString()}</td>
                                     <td className="py-3 smaller text-danger text-end">-{parseFloat(trans.insurance_deduction).toLocaleString()}</td>
                                     <td className="py-3 smaller text-danger text-end">-{parseFloat(trans.pension_deduction).toLocaleString()}</td>
-                                    <td className="py-3 fw-extrabold text-emerald text-end pe-4">${parseFloat(trans.net_pay).toLocaleString()}</td>
+                                    <td className="py-3 fw-extrabold text-emerald text-end pe-4">₦{parseFloat(trans.net_pay).toLocaleString()}</td>
                                 </tr>
                             ))}
                             {history.length === 0 && (

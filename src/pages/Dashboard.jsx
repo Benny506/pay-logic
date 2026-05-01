@@ -110,7 +110,7 @@ const Dashboard = () => {
                     <AnalyticsCard 
                         title="Monthly Payout"
                         value={(stats?.totalPayroll || 0).toLocaleString()}
-                        prefix="$"
+                        prefix="₦"
                         icon={<HiOutlineCurrencyDollar size={24} />}
                     />
                 </Col>
@@ -118,7 +118,7 @@ const Dashboard = () => {
                     <AnalyticsCard 
                         title="Average Salary"
                         value={(stats?.averageSalary || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                        prefix="$"
+                        prefix="₦"
                         icon={<HiOutlineBriefcase size={24} />}
                     />
                 </Col>
@@ -166,7 +166,7 @@ const Dashboard = () => {
                                         axisLine={false} 
                                         tickLine={false} 
                                         tick={{ fill: '#94A3B8', fontSize: 11 }} 
-                                        tickFormatter={(val) => `$${val/1000}k`}
+                                        tickFormatter={(val) => `₦${val/1000}k`}
                                     />
                                     <Tooltip 
                                         contentStyle={{ backgroundColor: '#1E293B', border: 'none', borderRadius: '12px', boxShadow: '0 10px 20px rgba(0,0,0,0.5)' }}

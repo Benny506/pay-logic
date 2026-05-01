@@ -176,7 +176,7 @@ const Payroll = () => {
                                             </div>
                                         </td>
                                         <td className="py-4 border-0">
-                                            <span className="fw-extrabold text-emerald">${parseFloat(run.total_payout).toLocaleString()}</span>
+                                            <span className="fw-extrabold text-emerald">₦{parseFloat(run.total_payout).toLocaleString()}</span>
                                         </td>
                                         <td className="py-4 border-0 text-center">
                                             <Badge bg="success" className="bg-opacity-10 text-success rounded-pill px-3 py-2 fw-medium border-success border-opacity-10">
@@ -249,7 +249,7 @@ const Payroll = () => {
                         </div>
                         <div className="text-end">
                             <p className="text-slate text-uppercase small fw-bold mb-0">Projected Total Payout</p>
-                            <h2 className="text-emerald fw-extrabold mb-0">${totalPayoutPreview.toLocaleString()}</h2>
+                            <h2 className="text-emerald fw-extrabold mb-0">₦{totalPayoutPreview.toLocaleString()}</h2>
                         </div>
                     </div>
 
@@ -258,11 +258,11 @@ const Payroll = () => {
                             <thead className="sticky-top bg-midnight mb-2">
                                 <tr className="border-white border-opacity-10">
                                     <th className="py-3 px-3 text-slate smaller text-uppercase fw-bold">Employee</th>
-                                    <th className="py-3 text-slate smaller text-uppercase fw-bold">Gross ($)</th>
+                                    <th className="py-3 text-slate smaller text-uppercase fw-bold">Gross (₦)</th>
                                     <th className="py-3 text-danger smaller text-uppercase fw-bold">Tax (10%)</th>
                                     <th className="py-3 text-danger smaller text-uppercase fw-bold text-nowrap">Ins. (5%)</th>
                                     <th className="py-3 text-danger smaller text-uppercase fw-bold text-nowrap">Pens. (5%)</th>
-                                    <th className="py-3 text-emerald smaller text-uppercase fw-bold">Net Pay ($)</th>
+                                    <th className="py-3 text-emerald smaller text-uppercase fw-bold">Net Pay (₦)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -273,7 +273,7 @@ const Payroll = () => {
                                         <td className="py-3 smaller text-danger">-{item.tax_deduction.toLocaleString()}</td>
                                         <td className="py-3 smaller text-danger">-{item.insurance_deduction.toLocaleString()}</td>
                                         <td className="py-3 smaller text-danger">-{item.pension_deduction.toLocaleString()}</td>
-                                        <td className="py-3 fw-extrabold text-emerald">${item.net_pay.toLocaleString()}</td>
+                                        <td className="py-3 fw-extrabold text-emerald">₦{item.net_pay.toLocaleString()}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -312,10 +312,10 @@ const Payroll = () => {
                     </div>
                 </Modal.Header>
                 <Modal.Body className="p-4 bg-midnight bg-opacity-30">
-                    <div className="d-flex justify-content-between align-items-center mb-4 text-white">
+                    <div className="d-flex justify-content-between align-items-center mb-4 text-white no-print">
                         <div className="p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-5">
                             <p className="smaller text-slate fw-bold text-uppercase mb-1">Batch Total Payout</p>
-                            <h3 className="fw-extrabold text-emerald mb-0">${parseFloat(selectedRun?.total_payout || 0).toLocaleString()}</h3>
+                            <h3 className="fw-extrabold text-emerald mb-0">₦{parseFloat(selectedRun?.total_payout || 0).toLocaleString()}</h3>
                         </div>
                         <Button className="btn-emerald d-flex align-items-center gap-2 px-4 rounded-pill no-print" onClick={() => window.print()}>
                             <HiOutlinePrinter size={20} />
@@ -328,11 +328,11 @@ const Payroll = () => {
                             <thead className="sticky-top bg-midnight">
                                 <tr className="border-white border-opacity-10">
                                     <th className="py-3 px-3 text-slate smaller text-uppercase fw-bold">Employee Name</th>
-                                    <th className="py-3 text-slate smaller text-uppercase fw-bold text-end">Gross ($)</th>
+                                    <th className="py-3 text-slate smaller text-uppercase fw-bold text-end">Gross (₦)</th>
                                     <th className="py-3 text-danger smaller text-uppercase fw-bold text-end">Tax (-10%)</th>
                                     <th className="py-3 text-danger smaller text-uppercase fw-bold text-end">Ins. (-5%)</th>
                                     <th className="py-3 text-danger smaller text-uppercase fw-bold text-end">Pens. (-5%)</th>
-                                    <th className="py-3 text-emerald smaller text-uppercase fw-bold text-end pe-4">Net Payout ($)</th>
+                                    <th className="py-3 text-emerald smaller text-uppercase fw-bold text-end pe-4">Net Payout (₦)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -343,14 +343,14 @@ const Payroll = () => {
                                         <td className="py-3 smaller text-danger text-end">-{parseFloat(trans.tax_deduction).toLocaleString()}</td>
                                         <td className="py-3 smaller text-danger text-end">-{parseFloat(trans.insurance_deduction).toLocaleString()}</td>
                                         <td className="py-3 smaller text-danger text-end">-{parseFloat(trans.pension_deduction).toLocaleString()}</td>
-                                        <td className="py-3 fw-extrabold text-emerald text-end pe-4">${parseFloat(trans.net_pay).toLocaleString()}</td>
+                                        <td className="py-3 fw-extrabold text-emerald text-end pe-4">₦{parseFloat(trans.net_pay).toLocaleString()}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </Table>
                     </div>
                 </Modal.Body>
-                <Modal.Footer className="border-top border-white border-opacity-10 p-4">
+                <Modal.Footer className="border-top border-white border-opacity-10 p-4 no-print">
                     <Button variant="outline-dark" className="rounded-pill px-4 no-print" onClick={() => setShowReportModal(false)}>
                         Close Audit
                     </Button>

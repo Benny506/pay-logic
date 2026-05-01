@@ -33,7 +33,7 @@ const Departments = () => {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const loadDepartments = async () => {
+        loadDepartments = async () => {
             try {
                 dispatch(setGlobalLoading({ loading: true, title: 'Aggregating Departments', message: 'Analyzing departmental resource allocation...' }))
                 const data = await fetchEmployees()
@@ -93,7 +93,7 @@ const Departments = () => {
                     <AnalyticsCard
                         title="Avg. Dept Budget"
                         value={(departmentStats.reduce((sum, d) => sum + d.budget, 0) / departmentStats.length).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                        prefix="$"
+                        prefix="₦"
                         icon={<HiOutlineTrendingUp size={24} />}
                     />
                 </Col>
@@ -124,7 +124,7 @@ const Departments = () => {
                                         axisLine={false}
                                         tickLine={false}
                                         tick={{ fill: '#94A3B8', fontSize: 11 }}
-                                        tickFormatter={(val) => `$${val / 1000}k`}
+                                        tickFormatter={(val) => `₦${val / 1000}k`}
                                     />
                                     <Tooltip
                                         contentStyle={{ backgroundColor: '#1E293B', border: 'none', borderRadius: '12px', color: '#F8FAFC' }}
@@ -166,7 +166,7 @@ const Departments = () => {
                             </div>
 
                             <div className="mb-4">
-                                <h2 className="text-white fw-extrabold mb-1">${dept.budget.toLocaleString()}</h2>
+                                <h2 className="text-white fw-extrabold mb-1">₦{dept.budget.toLocaleString()}</h2>
                                 <p className="text-slate uppercase smaller tracking-widest fw-bold mb-0">Monthly Payroll Budget</p>
                             </div>
 
@@ -176,7 +176,7 @@ const Departments = () => {
                                     <small className="text-slate uppercase smaller">Staff</small>
                                 </div>
                                 <div className="text-center flex-grow-1">
-                                    <h5 className="mb-0 fw-bold text-black">${dept.averageSalary.toLocaleString(undefined, { maximumFractionDigits: 0 })}</h5>
+                                    <h5 className="mb-0 fw-bold text-black">₦{dept.averageSalary.toLocaleString(undefined, { maximumFractionDigits: 0 })}</h5>
                                     <small className="text-slate uppercase smaller">Avg Base</small>
                                 </div>
                             </div>

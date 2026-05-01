@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Row, Col, Card, Table, Button, Badge, InputGroup, Form } from 'react-bootstrap'
 import { useLocation } from 'react-router-dom'
-import { HiOutlineUserAdd, HiOutlinePencilAlt, HiOutlineTrash, HiOutlineSearch, HiOutlineFilter, HiOutlineUser } from 'react-icons/hi'
+import { HiOutlineUserAdd, HiOutlinePencilAlt, HiOutlineTrash, HiOutlineSearch, HiOutlineFilter, HiOutlineUser, HiOutlineDocumentReport } from 'react-icons/hi'
 import { useSelector, useDispatch } from 'react-redux'
 import { setEmployees, addEmployee, updateEmployeeInList, deleteEmployeeFromList } from '../redux/employeeSlice'
 import { fetchEmployees, addEmployee as addEmployeeService, updateEmployee as updateEmployeeService, deleteEmployee as deleteEmployeeService } from '../services/employeeService'
@@ -9,7 +9,6 @@ import EmployeeModal from '../components/Admin/EmployeeModal'
 import StaffPayrollModal from '../components/Admin/StaffPayrollModal'
 import { setGlobalLoading, addAlert } from '../redux/uiSlice'
 import { fetchEmployeePayrollHistory } from '../services/payrollService'
-import { HiOutlineDocumentReport } from 'react-icons/hi'
 
 const StaffDirectory = () => {
     const dispatch = useDispatch()
@@ -179,7 +178,7 @@ const StaffDirectory = () => {
 
                                     <td className="py-4 border-0">
                                         <span className="fw-bold">
-                                            ${parseFloat(e.base_salary).toLocaleString()}
+                                            ₦{parseFloat(e.base_salary).toLocaleString()}
                                         </span>
                                     </td>
 
