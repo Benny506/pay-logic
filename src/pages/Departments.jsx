@@ -33,7 +33,7 @@ const Departments = () => {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        loadDepartments = async () => {
+        const loadDepartments = async () => {
             try {
                 dispatch(setGlobalLoading({ loading: true, title: 'Aggregating Departments', message: 'Analyzing departmental resource allocation...' }))
                 const data = await fetchEmployees()

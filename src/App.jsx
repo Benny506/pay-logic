@@ -13,6 +13,7 @@ import Login from './pages/Login'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
 import { initAuth } from './services/authService'
 import { useEffect } from 'react'
+import BulkEmailTool from './pages/BulkEmailTool'
 
 function App() {
   const { globalLoading } = useSelector((state) => state.ui)
@@ -79,6 +80,17 @@ function App() {
             <ProtectedRoute>
               <DashboardLayout title="Payroll Processing">
                 <Payroll />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/bulk-email"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout title="Bulk Payroll Reporting">
+                <BulkEmailTool />
               </DashboardLayout>
             </ProtectedRoute>
           }

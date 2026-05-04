@@ -1,6 +1,6 @@
 import { Nav, Button, Offcanvas } from 'react-bootstrap'
 import { Link, useLocation } from 'react-router-dom'
-import { HiOutlineUsers, HiOutlineCurrencyDollar, HiOutlineChartPie, HiOutlineCog, HiOutlineLogout, HiOutlineOfficeBuilding, HiOutlineArrowCircleLeft } from 'react-icons/hi'
+import { HiOutlineUsers, HiOutlineCurrencyDollar, HiOutlineChartPie, HiOutlineCog, HiOutlineLogout, HiOutlineOfficeBuilding, HiOutlineArrowCircleLeft, HiOutlineMailOpen } from 'react-icons/hi'
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleSidebar } from '../../redux/uiSlice'
 import { signOutService } from '../../services/authService'
@@ -26,6 +26,7 @@ const Sidebar = () => {
     { name: 'Staff Directory', path: '/staff', icon: <HiOutlineUsers size={20} /> },
     { name: 'Departments', path: '/departments', icon: <HiOutlineOfficeBuilding size={20} /> },
     { name: 'Payroll Run', path: '/payroll', icon: <HiOutlineCurrencyDollar size={20} /> },
+    { name: 'Bulk Email', path: '/bulk-email', icon: <HiOutlineMailOpen size={20} /> },
     // { name: 'Settings', path: '/settings', icon: <HiOutlineCog size={20} /> },
   ]
 
