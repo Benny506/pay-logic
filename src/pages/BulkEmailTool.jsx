@@ -13,6 +13,8 @@ import {
 import { supabase, supabaseAnonKey } from '../supabase/supabaseClient';
 import { useDispatch } from 'react-redux';
 import { setGlobalLoading } from '../redux/uiSlice';
+import Papa from 'papaparse';
+import { REQUIRED_CSV_HEADERS } from '../utils/keywords-helper';
 
 const BulkEmailTool = () => {
     const dispatch = useDispatch();
@@ -36,81 +38,104 @@ const BulkEmailTool = () => {
     const processCSV = async () => {
         if (!csvFile) return;
         setIsProcessing(true);
-        dispatch(setGlobalLoading({ loading: true, title: 'Processing CSV', message: 'Extracting and validating staff emails...' }));
+        dispatch(setGlobalLoading({ loading: true, title: 'Processing CSV', message: 'Extracting and validating staff data...' }));
+        setResultMessage(null);
 
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const text = e.target.result;
-            const rows = text.split(/\r?\n/);
+        Papa.parse(csvFile, {
+            header: true,
+            skipEmptyLines: true,
+            complete: async (results) => {
+                const { data, meta } = results;
+                
+                // Validate Headers
+                const headers = meta.fields || [];
+                const missingHeaders = REQUIRED_CSV_HEADERS.filter(
+                    req => !headers.some(h => h.trim().toLowerCase() === req.toLowerCase())
+                );
 
-            const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-            const foundEmails = new Set();
+                if (missingHeaders.length > 0) {
+                    setResultMessage({ 
+                        type: 'danger', 
+                        text: `Invalid CSV format. Missing required columns: ${missingHeaders.join(', ')}` 
+                    });
+                    setIsProcessing(false);
+                    dispatch(setGlobalLoading(false));
+                    return;
+                }
 
-            rows.forEach(row => {
-                const matches = row.match(emailRegex);
-                if (matches) matches.forEach(email => foundEmails.add(email.toLowerCase().trim()));
-            });
+                // Helper to get case-insensitive header
+                const getCol = (row, colName) => {
+                    const key = Object.keys(row).find(k => k.trim().toLowerCase() === colName.toLowerCase());
+                    return key ? row[key] : null;
+                };
 
-            if (foundEmails.size === 0) {
-                alert('No emails found in the CSV.');
-                setIsProcessing(false);
-                dispatch(setGlobalLoading(false));
-                return;
-            }
-
-            try {
-                // 1. Validate Staff Only
-                const { data: staff, error: staffError } = await supabase
-                    .from('pay_employees')
-                    .select('*')
-                    .in('email', Array.from(foundEmails));
-
-                if (staffError) throw staffError;
-
-                // 2. Fetch Full History for each Staff
-                const staffWithHistory = await Promise.all(staff.map(async (member) => {
-                    const { data: history, error: historyError } = await supabase
-                        .from('pay_transactions')
-                        .select('*')
-                        .eq('employee_id', member.id)
-                        .order('year', { ascending: false })
-                        .order('month', { ascending: false });
-
-                    if (historyError) throw historyError;
-
+                const parsedRows = data.map(row => {
+                    const salary = parseFloat(getCol(row, 'Total Salary') || 0);
+                    const tax = parseFloat(getCol(row, 'Tax') || 0);
+                    const ins = parseFloat(getCol(row, 'Insurance') || 0);
+                    const pen = parseFloat(getCol(row, 'Pension') || 0);
+                    const netPayout = salary - tax - ins - pen;
                     return {
-                        ...member,
-                        history,
-                        lifetimePaid: history.reduce((sum, t) => sum + parseFloat(t.net_pay || 0), 0),
-                        avgNet: history.length > 0 ? history.reduce((sum, t) => sum + parseFloat(t.net_pay || 0), 0) / history.length : 0
+                        email: (getCol(row, 'Email') || '').toLowerCase().trim(),
+                        name: getCol(row, 'Name'),
+                        month: getCol(row, 'Month'),
+                        year: getCol(row, 'Year'),
+                        salary,
+                        tax,
+                        ins,
+                        pen,
+                        netPayout
                     };
-                }));
+                }).filter(r => r.email);
 
-                setProcessedData(staffWithHistory);
-                setSkippedCount(foundEmails.size - staff.length);
-                setCurrentStep(2);
-            } catch (err) {
-                console.error("Processing Error:", err);
-                alert('An error occurred while processing staff data.');
-            } finally {
+                const foundEmails = new Set(parsedRows.map(r => r.email));
+
+                if (foundEmails.size === 0) {
+                    setResultMessage({ type: 'danger', text: 'No valid emails found in the CSV.' });
+                    setIsProcessing(false);
+                    dispatch(setGlobalLoading(false));
+                    return;
+                }
+
+                try {
+                    // 1. Validate Staff Only
+                    const { data: staff, error: staffError } = await supabase
+                        .from('pay_employees')
+                        .select('*')
+                        .in('email', Array.from(foundEmails));
+
+                    if (staffError) throw staffError;
+
+                    // 2. Map verified staff back to CSV data
+                    const verifiedEmails = new Set(staff.map(s => s.email.toLowerCase()));
+                    const finalData = parsedRows
+                        .filter(row => verifiedEmails.has(row.email))
+                        .map(row => {
+                            const dbStaff = staff.find(s => s.email.toLowerCase() === row.email);
+                            return { ...dbStaff, csvData: row };
+                        });
+
+                    setProcessedData(finalData);
+                    setSkippedCount(foundEmails.size - finalData.length);
+                    setCurrentStep(2);
+                } catch (err) {
+                    console.error("Processing Error:", err);
+                    setResultMessage({ type: 'danger', text: 'An error occurred while validating staff data.' });
+                } finally {
+                    setIsProcessing(false);
+                    dispatch(setGlobalLoading(false));
+                }
+            },
+            error: (err) => {
+                setResultMessage({ type: 'danger', text: `Failed to parse CSV: ${err.message}` });
                 setIsProcessing(false);
                 dispatch(setGlobalLoading(false));
             }
-        };
-        reader.readAsText(csvFile);
+        });
     };
 
     const generateEmailHTML = (member) => {
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const historyRows = member.history.map(t => `
-            <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #f1f5f9;">${monthNames[t.month - 1]} ${t.year}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #f1f5f9;">₦${parseFloat(t.gross_pay || 0).toLocaleString()}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; color: #ef4444;">-₦${parseFloat(t.tax_deduction || 0).toLocaleString()}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: #059669;">₦${parseFloat(t.net_pay || 0).toLocaleString()}</td>
-            </tr>
-        `).join('');
-
+        const { csvData } = member;
         return `
             <!DOCTYPE html>
             <html>
@@ -119,31 +144,49 @@ const BulkEmailTool = () => {
                     body { font-family: 'Inter', sans-serif; color: #1e293b; line-height: 1.6; margin: 0; padding: 0; background-color: #f8fafc; }
                     .container { max-width: 700px; margin: 40px auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
                     .header { background: linear-gradient(135deg, #10b981 0%, #065f46 100%); padding: 50px 40px; color: white; }
-                    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px 40px; background: #f1f5f9; }
-                    .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+                    .summary-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 30px 40px; background: #f1f5f9; }
+                    .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); text-align: center; }
                     .card-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; margin-bottom: 4px; }
-                    .card-value { font-size: 20px; font-weight: 800; color: #0f172a; }
+                    .card-value { font-size: 28px; font-weight: 800; color: #10b981; }
                     .content { padding: 40px; }
                     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                    th { text-align: left; font-size: 12px; text-transform: uppercase; color: #64748b; padding: 12px; border-bottom: 2px solid #e2e8f0; }
+                    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #f1f5f9; }
+                    th { font-size: 12px; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #e2e8f0; }
+                    .amount { text-align: right; font-weight: 600; }
+                    .deduction { color: #ef4444; }
                     .footer { padding: 30px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="header">
-                        <h1 style="margin: 0; font-size: 28px; font-weight: 800;">Statement of Earnings</h1>
+                        <h1 style="margin: 0; font-size: 28px; font-weight: 800;">${csvData.month} ${csvData.year} Statement</h1>
                         <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 16px;">Prepared for <strong>${member.full_name}</strong></p>
                     </div>
                     <div class="summary-grid">
-                        <div class="card"><div class="card-label">Lifetime Earnings</div><div class="card-value">₦${member.lifetimePaid.toLocaleString()}</div></div>
-                        <div class="card"><div class="card-label">Avg. Monthly Net</div><div class="card-value">₦${Math.round(member.avgNet).toLocaleString()}</div></div>
+                        <div class="card"><div class="card-label">Calculated Net Payout</div><div class="card-value">₦${csvData.netPayout.toLocaleString(undefined, {minimumFractionDigits: 2})}</div></div>
                     </div>
                     <div class="content">
-                        <h3 style="margin-top: 0; font-weight: 800;">Historical Breakdown</h3>
+                        <h3 style="margin-top: 0; font-weight: 800;">Salary Breakdown</h3>
                         <table>
-                            <thead><tr><th>Period</th><th>Gross</th><th>Deductions</th><th>Net Payout</th></tr></thead>
-                            <tbody>${historyRows}</tbody>
+                            <tbody>
+                                <tr>
+                                    <td>Base Salary</td>
+                                    <td class="amount">₦${csvData.salary.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tax Deduction (10%)</td>
+                                    <td class="amount deduction">-₦${csvData.tax.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                                </tr>
+                                <tr>
+                                    <td>Insurance Deduction (5%)</td>
+                                    <td class="amount deduction">-₦${csvData.ins.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                                </tr>
+                                <tr>
+                                    <td>Pension Deduction (5%)</td>
+                                    <td class="amount deduction">-₦${csvData.pen.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <div class="footer">&copy; 2026 PayLogic Systems. Automated encrypted statement.</div>
@@ -159,7 +202,7 @@ const BulkEmailTool = () => {
 
         const emailPayloads = processedData.map(member => ({
             to: member.email,
-            subject: `Payroll Statement - ${member.full_name}`,
+            subject: `${member.csvData.month} ${member.csvData.year} Payroll Statement - ${member.full_name}`,
             html: generateEmailHTML(member)
         }));
 
@@ -230,12 +273,12 @@ const BulkEmailTool = () => {
                                     <h5 className="text-white fw-bold mb-4 d-flex align-items-center gap-2"><HiOutlineDatabase className="text-emerald" /> Data Preview</h5>
                                     <div className="table-responsive">
                                         <Table hover variant="dark" className="bg-transparent mb-0">
-                                            <thead><tr className="border-bottom border-white border-opacity-10"><th className="text-slate smaller border-0">EMPLOYEE</th><th className="text-slate smaller border-0">LIFETIME PAYOUT</th><th className="text-slate smaller border-0">ACTIONS</th></tr></thead>
+                                            <thead><tr className="border-bottom border-white border-opacity-10"><th className="text-slate smaller border-0">EMPLOYEE</th><th className="text-slate smaller border-0">NET PAYOUT</th><th className="text-slate smaller border-0">ACTIONS</th></tr></thead>
                                             <tbody>
                                                 {processedData.map((staff, idx) => (
                                                     <tr key={idx} className="border-bottom border-white border-opacity-5">
                                                         <td className="py-3 border-0"><div className="fw-bold text-white">{staff.full_name}</div><small className="text-slate">{staff.email}</small></td>
-                                                        <td className="py-3 border-0 text-emerald fw-bold">₦{staff.lifetimePaid.toLocaleString()}</td>
+                                                        <td className="py-3 border-0 text-emerald fw-bold">₦{staff.csvData.netPayout.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                                                         <td className="py-3 border-0">
                                                             <Button variant="link" size="sm" className="text-emerald p-0 text-decoration-none d-flex align-items-center gap-1" onClick={() => { const win = window.open("", "_blank"); win.document.write(generateEmailHTML(staff)); }}>
                                                                 Preview <HiOutlineExternalLink />
