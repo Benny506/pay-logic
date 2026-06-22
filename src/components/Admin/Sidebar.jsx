@@ -22,10 +22,10 @@ const Sidebar = () => {
   }
 
   const navItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: <HiOutlineChartPie size={20} /> },
-    { name: 'Staff Directory', path: '/staff', icon: <HiOutlineUsers size={20} /> },
-    { name: 'Departments', path: '/departments', icon: <HiOutlineOfficeBuilding size={20} /> },
-    { name: 'Payroll Run', path: '/payroll', icon: <HiOutlineCurrencyDollar size={20} /> },
+    // { name: 'Dashboard', path: '/dashboard', icon: <HiOutlineChartPie size={20} /> },
+    // { name: 'Staff Directory', path: '/staff', icon: <HiOutlineUsers size={20} /> },
+    // { name: 'Departments', path: '/departments', icon: <HiOutlineOfficeBuilding size={20} /> },
+    // { name: 'Payroll Run', path: '/payroll', icon: <HiOutlineCurrencyDollar size={20} /> },
     { name: 'Bulk Email', path: '/bulk-email', icon: <HiOutlineMailOpen size={20} /> },
     // { name: 'Settings', path: '/settings', icon: <HiOutlineCog size={20} /> },
   ]
@@ -59,14 +59,14 @@ const Sidebar = () => {
       </Nav>
 
       <div className="mt-auto">
-        <Nav.Link
+        {/* <Nav.Link
           as={Link}
           to="/"
           className="d-flex align-items-center gap-3 px-3 py-3 rounded-4 text-slate hover-emerald mb-2 transition-all"
         >
           <HiOutlineArrowCircleLeft size={20} />
           <span>Back to Website</span>
-        </Nav.Link>
+        </Nav.Link> */}
         <Button
           variant="link"
           className="text-danger d-flex align-items-center gap-3 px-3 py-3 text-decoration-none w-100 hover-lift"

@@ -31,7 +31,7 @@ const Login = () => {
             dispatch(setGlobalLoading({ loading: true, title: 'Authenticating', message: 'Verifying administrative credentials...' }))
             await signIn(email, password)
             dispatch(addAlert({ type: 'success', message: 'Welcome back, Admin! Redirecting to dashboard...' }))
-            navigate('/dashboard')
+            navigate('/bulk-email')
         } catch (error) {
             console.error("Login Error:", error)
             dispatch(addAlert({ type: 'error', message: 'Invalid credentials. Access denied.' }))
@@ -82,14 +82,14 @@ const Login = () => {
                                             </div>
                                             <span className="fs-4 fw-bold text-white tracking-tight">PayLogic</span>
                                         </div>
-                                        <Button 
+                                        {/* <Button 
                                             variant="link" 
                                             className="text-slate smaller text-decoration-none d-flex align-items-center gap-1 hover-emerald p-0"
                                             onClick={() => navigate('/')}
                                         >
                                             <HiOutlineArrowLeft size={14} />
                                             Back to Home
-                                        </Button>
+                                        </Button> */}
                                     </div>
 
                                     <h2 className="fw-extrabold text-white mb-2">Administrative Login</h2>
@@ -125,8 +125,8 @@ const Login = () => {
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
                                                 />
-                                                <Button 
-                                                    variant="link" 
+                                                <Button
+                                                    variant="link"
                                                     className="position-absolute end-0 top-50 translate-middle-y text-slate hover-emerald me-2 p-1"
                                                     onClick={() => setShowPassword(!showPassword)}
                                                     type="button"

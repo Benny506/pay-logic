@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AnimatePresence } from 'motion/react'
 import DashboardLayout from './components/Admin/DashboardLayout'
 import StaffDirectory from './pages/StaffDirectory'
-import LandingPage from './pages/LandingPage'
+// import LandingPage from './pages/LandingPage'
 import GlobalLoader from './components/Loader/GlobalLoader'
 import GlobalAlerts from './components/Alert/GlobalAlerts'
 import Dashboard from './pages/Dashboard'
@@ -35,12 +35,14 @@ function App() {
       </AnimatePresence>
 
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* <Route path="/" element={<LandingPage />} /> */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
 
         {/* Protected Admin Routes */}
+        {/*
         <Route
           path="/dashboard"
           element={
@@ -84,6 +86,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        */}
 
         <Route
           path="/bulk-email"

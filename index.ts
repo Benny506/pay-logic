@@ -14,6 +14,7 @@ interface EmailRequest {
   to: string
   subject: string
   html: string
+  attachments?: any[]
 }
 
 const corsHeaders = {
@@ -53,6 +54,7 @@ serve(async (req) => {
             to: [{ email: item.to }],
             subject: item.subject,
             html: item.html,
+            attachments: item.attachments,
           }),
         })
         
