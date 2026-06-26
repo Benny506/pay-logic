@@ -37,11 +37,11 @@ const PreviewStep = ({ processedData, skippedCount, onBack, onConfirm, isSending
                             {processedData.map((staff, idx) => (
                                 <tr key={idx} className="border-bottom border-white border-opacity-5">
                                     <td className="py-3 border-0">
-                                        <div className="fw-bold text-white">{staff.Name}</div>
+                                        <div className="fw-bold text-white">{staff['Name:']}</div>
                                         <small className="text-slate">{staff.Email}</small>
                                     </td>
                                     <td className="py-3 border-0 text-emerald fw-bold">
-                                        ₦{parseFloat((staff.netPay || '0').replace(/,/g, '')).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                        ₦{parseFloat((staff['NET PAY'] || '0').replace(/,/g, '')).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                     </td>
                                     <td className="py-3 border-0">
                                         <div className="d-flex gap-3">

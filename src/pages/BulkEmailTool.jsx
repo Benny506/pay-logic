@@ -39,16 +39,16 @@ const BulkEmailTool = () => {
             for (let i = 0; i < processedData.length; i++) {
                 const member = processedData[i];
                 const html = generateEmailHTML(member);
-                const base64Pdf = await generatePDFBase64(html);
+                const base64Pdf = await generatePDFBase64(member);
                 
                 emailPayloads.push({
                     to: member.Email,
-                    subject: `${member.Period || 'Payroll'} Statement - ${member.Name}`,
+                    subject: `${member['Period:'] || 'Payroll'} Statement - ${member['Name:']}`,
                     html: html,
                     attachments: [
                         {
                             content: base64Pdf,
-                            filename: `${(member.Name || 'Staff').replace(/\\s+/g, '_')}_Payslip.pdf`,
+                            filename: `${(member['Name:'] || 'Staff').replace(/\\s+/g, '_')}_Payslip.pdf`,
                             disposition: 'attachment'
                         }
                     ]
